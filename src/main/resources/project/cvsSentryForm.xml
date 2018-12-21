@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<editor>
+    <formElement>
+        <type>entry</type>
+        <label>Working directory:</label>
+        <property>dest</property>
+        <required>1</required>
+        <documentation>The CVS workspace that points to the repository. (Required)</documentation>
+    </formElement>
+	<formElement>
+        <type>entry</type>
+        <label>Module:</label>
+        <property>module</property>
+        <required>1</required>        
+        <documentation>Provide the name of the CVS module to get. (Required)</documentation>
+    </formElement>
+
+    <formElement>
+        <type>entry</type>
+        <label>Quiet time minutes:</label>
+        <property>QuietTimeMinutes</property>
+        <documentation>The number of minutes of no check-in activity required before launching the procedure.</documentation>
+    </formElement>
+
+    <formElement>
+        <type>checkbox</type>
+        <label>Enabled for ElectricSentry:</label>
+        <property>TriggerFlag</property>
+        <checkedValue>2</checkedValue>
+        <uncheckedValue>0</uncheckedValue>
+        <initiallyChecked>1</initiallyChecked>
+        <documentation>Enable for continuous integration monitoring by ElectricSentry.</documentation>
+    </formElement>
+
+    <formElement>
+        <property>scheduleDisabled</property>
+        <value>1</value>
+    </formElement>
+    <formElement>
+		<property>priority</property>
+		<configurable>1</configurable>
+	</formElement> 
+</editor>

@@ -1,0 +1,17 @@
+<editor>
+    <help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#Preflight</help>
+    <formElement>
+        <type>entry</type>
+        <label>Destination Directory:</label>
+        <required>1</required>
+        <property>dest</property>
+        <documentation>The path or URL to the repository that preflight will pull from before overlaying files. (Required)</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Configuration:</label>
+        <property>config</property>
+        <required>1</required>
+        <documentation>The name of a saved SCM configuration. (Required)</documentation>
+    </formElement>
+</editor>

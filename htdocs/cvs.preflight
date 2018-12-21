@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+    <server>
+        <hostName>chronic4</hostName>
+        <userName>admin</userName>
+		<password>changeme</password>     
+    </server>
+	
+    <procedure>
+        <projectName>CVS</projectName>
+        <procedureName>Master</procedureName>
+    </procedure>
+
+    <scm>
+       <type>ECSCM-CVS</type>               
+        <cvsroot>:pserver:build:Mbimp,vm@linplugin1:/var/lib/cvs</cvsroot>   
+        <module>ectest</module>  
+        <workdir>/tmp/test</workdir>
+    </scm>
+</data>

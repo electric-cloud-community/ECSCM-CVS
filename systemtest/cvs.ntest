@@ -1,0 +1,201 @@
+# -*-Perl-*-
+
+# cvs.ntest -
+#
+# Exercise basic components of ECSCM-CVS plugin
+#
+# Copyright (c) 2005-2011 Electric Cloud, Inc.
+# All rights reserved
+
+use strict;
+
+# read in setup and tests that are common to all ECSCM plugin 
+# system tests
+my $commonFile =  "$::gTestFileDir/../../ECSCM/systemtest/ntest.common";
+open F, "< $commonFile";
+my $code = do { local $/; <F> };
+close F;
+eval  $code ;
+
+ntest "check-checkout-present", {}, sub {
+    # Check that the plugin contains required components
+    my $xpath = $::N->getSteps("$::gPlugin_name","CheckoutCode");
+    assertOK($xpath,"get steps");    
+    assertEq("checkoutMethod", $xpath->findvalue("//step[1]/stepName"), "step 1 is checkoutMethod");
+};
+
+ntest "check-getSCMTag-present", {}, sub {
+    my $xpath = $::N->getSteps("$::gPlugin_name","getSCMTag");
+    assertOK($xpath, "get steps");
+    assertEq("tagMethod", $xpath->findvalue("//step[1]/stepName"), "step 1 is getSCMTag");
+
+};
+
+ntest "check-Preflight-present", {}, sub {
+    my $xpath = $::N->getSteps("$::gPlugin_name","Preflight");
+    assertOK($xpath, "get steps");
+    assertEq("preflight", $xpath->findvalue("//step[1]/stepName"), "step 1 is preflight");
+
+};
+
+ntest "check-config code-present", {}, sub {
+    my $xpath = $::N->getProperty("/projects/$::gPlugin_name/scm_driver/$::gPlugin_driver" . "::Cfg");
+    assertOK($xpath,"get cfg property");
+    assertNe("", $xpath->findvalue("//value"), "Config Code");
+};
+
+ntest "check-driver code-present", {}, sub {
+    my $xpath = $::N->getProperty("/projects/$::gPlugin_name/scm_driver/$::gPlugin_driver" . "::Driver");
+    assertOK($xpath,"get driver property");
+};
+
+# Tests specific or customized to this SCM
+ntest "setup-import test project", {}, sub {
+    assertOK($::N->import(
+             { file =>"$::gTestFileDir/import.xml",
+               path  => "/projects/ECSCM Tests",
+               force => 1
+             } ), "import test project");
+    assertOK($::N->getProcedure("ECSCM Tests", "cvstest"),"cvstest procedure exists");
+};
+
+ntest "setup-create configuration", {}, sub {
+    my $xpath = $::N->runProcedure("$::gPlugin_name", 
+        { procedureName => "CreateConfiguration",
+          pollInterval  => '0.2',
+          timeout       => 600,
+          actualParameter => [ 
+            { actualParameterName => 'config', value => "test" }, 
+            { actualParameterName => 'desc', value => "CVS config" }, 
+            { actualParameterName => 'protocol', value => "pserver" },
+            { actualParameterName => 'servername', value => "localhost" },
+            { actualParameterName => 'serverpath', value => "demo" },
+            { actualParameterName => 'credential', value => "test" },
+          ],
+          credential => [ 
+            { credentialName => 'test', userName => "qa", password => "qa", },
+          ],
+        });
+
+    assertOK($xpath, "run create configuration procedure");
+    # make sure it finished
+    my $jobId = 0;
+    my $status = "";
+    assertDef($xpath, "runProcedure finished without a timeout");
+    if ($xpath) {
+        $jobId  = $xpath->findvalue("//jobId");
+        $status = $xpath->findvalue("//status");
+
+        assertTrue($jobId && $jobId ne "",'valid job id');
+        assertEq('completed',$status,"job $jobId complete");
+
+        #abort if job did not finish
+        if ($status ne "completed") {
+            assertOK($::N->abortJob($jobId, {force => 1}));
+        }
+    }
+
+    # examine log files
+    $xpath = $::N->getJobDetails($jobId);
+
+    writeFile("$::gCurrentTestDir/createConfiguration.log","====Job Details====\n$xpath->{_xml}\n");
+
+    # check that the config and credential exist
+    $xpath = $::N->getProperty("/projects/$::ECSCM/scm_cfgs/test/scmPlugin");
+    assertEq("ECSCM-CVS",$xpath->findvalue("//value")->string_value,"config type");
+};
+
+#############################################################
+# check-checkout-present: test if the checkout method
+#           present in the Drive
+#############################################################
+ntest "test checkout code", {}, sub {
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/checkout.log`;
+    #doSetup();
+    
+    my $xpath = $::N->getActualParameters({projectName => "ECSCM Tests", procedureName => "cvstest", stepName => "cvs test"});
+    my $dest = $xpath->findvalue("//actualParameter[actualParameterName='dest']/value");
+    my $module = $xpath->findvalue("//actualParameter[actualParameterName='module']/value");
+       
+    my ($cmd, $out, $err) = runFakeCmd("checkout", $dest, $module);
+    
+    assertEq("cvs -d :pserver:qa\@localhost/demo checkout cvs-src",
+        $cmd, "command misspelled");
+    
+    assertDiff("U demo/Makefile.arm-wince-mingw32ce-gcc",
+        $out, "no output");
+    assertEq(0, $err,"exit code was different than 0");
+
+};
+
+#############################################################
+# check-checkout-present: test if the checkout method
+#           present in the Drive
+#############################################################
+ntest "test getSCMTag", {}, sub {
+    # fake command output
+    $::gFakeCmdOutput  = `cat $::gTestFileDir/getSCMTag.log`;
+        
+    my ($cmd, $out, $err) = runFakeCmd("getSCMTag");
+    my $expected = "Created by test program si : Parameters rlog --project=\"\\project\\path\" --hostname=localhost --port=7001 --user=eli --batch --recurse --noHeaderFormat --noTrailerFormat --fields=date --rfilter=daterange:\"'Feb 26, 2009 06:02:07 PM'\"-" . 
+        ": Nov 6, 2007 12:42:36 PM : Nov 6, 2007 9:00:49 AM : Nov 11, 2007 9:10:11 AM : Jul 4, 2008 12:00:00 PM " .
+        ": Jul 4, 2008 12:01:01 AM : Mar 2, 2009 11:56:56 AM The most recent time is: \"Mon, 02 Mar 2009 19:56:56 GMT\"";
+    
+    #assertDiff("si rlog --project=\"\project\path\1\" --hostname=localhost --port=7001 --user=eli --batch --recurse --noHeaderFormat --noTrailerFormat --fields=date --rfilter=branch::current --rfilter=daterange:\"'Feb 26, 2009 06:02:07 PM'",
+    #    $cmd, "command misspelled");
+    #assertDiff($expected, $out, "no output");
+    #assertEq(0, $err,"exit code was different than 0");
+
+};
+
+
+
+#############################################################
+# runFakeCmd: run a fake command. Use for testing
+#                                                           
+# cmdin - the command to run
+# input - the text to pipe into cmd (optional)
+#
+# returns
+#   exitstatus - exit code of command
+#   text       - stdout of command
+#############################################################
+sub runFakeCmd
+{
+    my ($fakeCmd, @opts) = @_;
+    my $cmd = "";
+
+    ## for test, if canned output is given, pop off
+    ## the next output block and return
+    if ("$::gFakeCmdOutput" eq "") {
+        # we ran out of fake output
+        return (99,"no more output");
+    }
+
+    if("checkout" eq $fakeCmd) {
+        $cmd = "cvs -d :pserver:qa\@localhost/$opts[1] checkout $opts[0]";
+    } 
+    elsif ("preflight" eq $fakeCmd) {
+        $cmd = "si connect --user=test --password=changeme --hostname=mks-test.com --port=8080 " .
+               "si resync -S c:/sandboxdemo/project.pj " .
+               "si merge -r1.1 -r 1.2 //depot/project.pj --sandbox=c:/sandboxdemo/project.pj";
+    }
+    elsif("getSCMTag") {
+        $cmd = "cvs -d :pserver:matute:adm123456\@localhost/demo log";
+    }
+    
+    my @lines = split(/\|\|/, "$::gFakeCmdOutput");
+    my $text = shift (@lines);
+    my ($exitstatus,$out) = split(/\:\:/,$text);
+    chomp $exitstatus;
+
+    # push remaining text 
+    my $newv = join ("\|\|", @lines);
+    $::gFakeCmdOutput = $newv;
+
+    return ($cmd,$out,$exitstatus);
+}
+1
+
+

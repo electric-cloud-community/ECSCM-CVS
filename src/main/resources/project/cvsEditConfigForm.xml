@@ -1,0 +1,30 @@
+<editor>
+    <formElement>
+        <type>textarea</type>
+        <label>Description:</label>
+        <property>description</property>
+    </formElement>
+    <formElement>
+        <type>credential</type>
+        <label>Login As:</label>
+        <property>credential</property>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Protocol:</label>
+        <required>1</required>
+        <property>protocol</property>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Server name:</label>
+        <required>1</required>
+        <property>servername</property>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Server path:</label>
+        <required>1</required>
+        <property>serverpath</property>
+    </formElement>
+</editor>

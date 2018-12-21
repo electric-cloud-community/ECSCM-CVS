@@ -1,0 +1,9 @@
+<editor>
+    <formElement>
+        <type>entry</type>
+        <label>Repository:</label>
+        <property>repository</property>
+        <required>1</required>
+        <documentation>The CVS repository to use.</documentation>
+    </formElement>
+</editor>

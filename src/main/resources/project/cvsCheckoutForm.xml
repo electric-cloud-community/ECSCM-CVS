@@ -1,0 +1,40 @@
+<editor>
+	<help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#CheckoutCode</help>
+    <formElement>
+        <type>entry</type>
+        <label>Configuration:</label>
+        <property>config</property>
+        <required>1</required>
+        <documentation>Provide the name of a saved SCM configuration. (Required)</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Destination Directory:</label>
+        <property>dest</property>
+        <required>1</required>
+        <documentation>Provide the path where the checked in files will be downloaded. (Required)</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Module:</label>
+        <property>module</property>
+        <required>1</required>
+        <documentation>Provide the name of the CVS module to get. (Required)</documentation>
+    </formElement>
+    <formElement>
+        <type>entry</type>
+        <label>Revision:</label>
+        <property>revision</property>
+        <required>0</required>
+        <documentation>Check out revision or tag.</documentation>
+    </formElement>
+	<formElement>
+            <type>checkbox</type>
+            <label>Run Quietly:</label>
+            <property>run_quietly</property>
+            <required>0</required>
+            <documentation>If checked the command will be really quiet; the command will only generate output for serious problems. This option can alleviate some problems that come up when a large number of files are checked out, so if the log is too big and the procedure shows problems it is recommended  to run the procedure with this option.</documentation>
+            <checkedValue>1</checkedValue>
+        <uncheckedValue>0</uncheckedValue>
+    </formElement>
+</editor>
