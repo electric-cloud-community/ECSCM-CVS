@@ -1,0 +1,47 @@
+<?xml version='1.0' standalone='yes'?>
+<fileset>
+  <file>
+    <path>CVSCfg.pm</path>
+    <xpath>//property[propertyName=&quot;ECSCM::CVS::Cfg&quot;]/value</xpath>
+  </file>
+  <file>
+    <path>CVSDriver.pm</path>
+    <xpath>//property[propertyName=&quot;ECSCM::CVS::Driver&quot;]/value</xpath>
+  </file>
+  <file>
+    <path>cvsCheckoutForm.xml</path>
+    <xpath>//property[propertyName=&quot;checkout&quot;]/value</xpath>
+  </file>
+  <file>
+    <path>cvsPreflightForm.xml</path>
+    <xpath>//property[propertyName=&quot;preflight&quot;]/value</xpath>
+  </file>
+  <file>
+    <path>cvsSentryForm.xml</path>
+    <xpath>//property[propertyName=&quot;sentry&quot;]/value</xpath>
+  </file>
+  <file>
+    <path>cvsTriggerForm.xml</path>
+    <xpath>//property[propertyName=&quot;trigger&quot;]/value</xpath>
+  </file>
+  <file>
+    <path>cvsCreateConfigForm.xml</path>
+    <xpath>//property[propertyName=&quot;createConfig&quot;]/value</xpath>
+  </file>
+  <file>
+    <path>cvsEditConfigForm.xml</path>
+    <xpath>//property[propertyName=&quot;editConfig&quot;]/value</xpath>
+  </file>
+  <file>
+    <path>ec_setup.pl</path>
+    <xpath>//property[propertyName=&quot;ec_setup&quot;]/value</xpath>
+  </file>
+  <file>
+    <path>cvsCheckoutForm.xml</path>
+    <xpath>//procedure[procedureName=&quot;CheckoutCode&quot;]/propertySheet/property[propertyName=&quot;ec_parameterForm&quot;]/value</xpath>
+  </file>
+  <file>
+    <path>cvsPreflightForm.xml</path>
+    <xpath>//procedure[procedureName=&quot;Preflight&quot;]/propertySheet/property[propertyName=&quot;ec_parameterForm&quot;]/value</xpath>
+  </file>
+</fileset>
